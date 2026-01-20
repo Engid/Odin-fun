@@ -7,40 +7,32 @@ import "core:strings"
 
 main :: proc() {
     buf: [256]byte 
-    fmt.println("A: ")
-    n, err := os.read(os.stdin, buf[:])
-    if err != nil {
-        fmt.eprintln("Error reading A: ", err)
-        return 
-    }
 
-    a_str := strings.trim_space(string(buf[:n]))
+    a, ok_a := read_int("A: ", buf[:])
 
-    a, ok := strconv.parse_int(a_str)
-
-    if !ok {
+    if !ok_a {
         fmt.eprintln("Error parsing A")
     }
 
-    fmt.println(a, ok)
-
-    fmt.println("B: ")
-
-    n, err = os.read(os.stdin, buf[:])
-
-    if err != nil {
-        fmt.eprintln("Error reading B: ", err)
-        return 
-    }
-
-    b_str := strings.trim_space(string(buf[:n]))
-
-    b, ok_b := strconv.parse_int(b_str)
-
+    b, ok_b := read_int("B: ", buf[:])
     if !ok_b {
         fmt.eprintln("Error parsing B")
     }
 
-    fmt.println("sum: ", a + b)
+    fmt.println("sum:", a + b)
 }
 
+
+read_int :: proc(prompt: string, buf: []byte) -> (int, bool) {
+    fmt.print(prompt)
+    n, err := os.read(os.stdin, buf[:])
+    if err != nil {
+        fmt.eprintln("Error reading input: ", err)
+        return 0, false
+    }
+
+    s := strings.trim_space(string(buf[:n]))
+    v, ok := strconv.parse_int(s)
+   
+    return v, ok
+}
